@@ -1,6 +1,9 @@
 :root {
   --g-gap: 12px;
   --g-columns: 3;
+  --accent: #6aa6ff;
+  --ring: rgba(255,255,255,.8);
+  --modal-bg: rgba(0,0,0,.6);
 }
 
 @media (max-width: 900px) { :root { --g-columns: 2; } }
@@ -35,7 +38,7 @@ body {
   gap: var(--g-gap);
 }
 .gallery-grid a {
-  position: relative;
+  position: relative; /* needed for overlay positioning */
   display: block;
   overflow: hidden;
   border-radius: 10px;
@@ -51,20 +54,88 @@ body {
   display: block;
   transition: transform .35s ease;
 }
-.gallery-grid a:focus-visible {
-  box-shadow: 0 0 0 3px #6aa6ff;
-}
-.gallery-grid a:hover img {
-  transform: scale(1.04);
-}
+.gallery-grid a:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
+.gallery-grid a:hover img { transform: scale(1.04); }
 
-/* Custom caption inside the lightbox */
+/* Custom caption inside the PhotoSwipe lightbox */
 .pswp__custom-caption {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
+  position: absolute; left: 0; right: 0; bottom: 0;
   background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
-  padding: 18px 16px 12px;
-  font-size: 14px;
-  line-height: 1.35;
+  padding: 18px 16px 12px; font-size: 14px; line-height: 1.35;
   text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
+
+/* --- Video circle overlay --- */
+.video-dot {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 64px; height: 64px;
+  border: 0; border-radius: 50%;
+  padding: 0; cursor: pointer;
+  background: transparent;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+.video-dot:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.video-dot__vid {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: saturate(1.1) contrast(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,.4);
+  pointer-events: none; /* avoid taking focus/clicks from the button */
+}
+.video-dot__ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--ring) inset, 0 0 0 1px rgba(0,0,0,.25);
+  pointer-events: none;
+}
+.video-dot__icon {
+  position: absolute;
+  font-size: 18px; line-height: 1;
+  transform: translateX(1px);
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+  pointer-events: none;
+}
+
+/* --- Video Modal --- */
+.video-modal[hidden] { display: none; }
+.video-modal {
+  position: fixed; inset: 0; z-index: 1000;
+}
+.video-modal__backdrop {
+  position: absolute; inset: 0; background: var(--modal-bg); backdrop-filter: blur(1px);
+}
+.video-modal__dialog {
+  position: relative;
+  width: min(920px, 92vw);
+  margin: 6vh auto 0;
+  background: #0b0d12;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  padding: 16px 16px 12px;
+}
+.video-modal__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  opacity: .85;
+}
+.video-modal__body { width: 100%; }
+#video-modal-player {
+  width: 100%;
+  max-height: 72vh;
+  display: block;
+  background: #000;
+  border-radius: 8px;
+}
+.video-modal__close {
+  position: absolute; top: 10px; right: 10px;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 0; background: rgba(255,255,255,.08); color: #fff;
+  cursor: pointer;
+  z-index: 10;
+}
+.video-modal__close:hover { background: rgba(255,255,255,.15); }

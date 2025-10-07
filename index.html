@@ -1,111 +1,95 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PhotoSwipe Gallery (Vanilla, Non-ESM)</title>
+  <title>PhotoSwipe Gallery (with Video Dots)</title>
 
   <!-- PhotoSwipe core styles -->
-  <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/photoswipe.min.css"
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/photoswipe.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Your gallery styles -->
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
   <section class="section">
     <h2>Image Gallery</h2>
-    <p class="hint">Click any image to open PhotoSwipe. Use ⌘/Ctrl + scroll to zoom.</p>
+    <p class="hint">Click an image to open PhotoSwipe. Click the round video in the top-right to watch.</p>
 
     <!-- Gallery root -->
     <div class="gallery-grid" id="my-gallery">
-      <!-- Item 1 -->
-      <a
-        href="https://picsum.photos/id/1015/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Mountain river at golden hour">
-        <img
-          src="https://picsum.photos/id/1015/400/267"
-          width="400" height="267"
-          alt="Mountain river at golden hour"
+      <!-- Each item: add data-video for the per-image video URL (fallback handled in JS) -->
+
+      <a href="https://picsum.photos/id/1015/1600/1067" data-pswp-width="1600" data-pswp-height="1067"
+        data-caption="Mountain river at golden hour"
+        data-video="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+        <img src="https://picsum.photos/id/1015/400/267" width="400" height="267" alt="Mountain river at golden hour"
           loading="lazy" decoding="async" />
+        <!-- Video circle overlay -->
+        <button class="video-dot" type="button" aria-label="Play video">
+          <video class="video-dot__vid" muted loop playsinline preload="metadata">
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+          </video>
+          <span class="video-dot__ring" aria-hidden="true"></span>
+          <span class="video-dot__icon" aria-hidden="true">▶</span>
+        </button>
       </a>
 
-      <!-- Item 2 -->
-      <a
-        href="https://picsum.photos/id/1025/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Majestic eagle portrait">
-        <img
-          src="https://picsum.photos/id/1025/400/267"
-          width="400" height="267"
-          alt="Majestic eagle portrait"
+      <a href="https://picsum.photos/id/1025/1600/1067" data-pswp-width="1600" data-pswp-height="1067"
+        data-caption="Majestic eagle portrait"
+        data-video="https://filesamples.com/samples/video/mp4/sample_640x360.mp4">
+        <img src="https://picsum.photos/id/1025/400/267" width="400" height="267" alt="Majestic eagle portrait"
           loading="lazy" decoding="async" />
+        <button class="video-dot" type="button" aria-label="Play video">
+          <video class="video-dot__vid" muted loop playsinline preload="metadata">
+            <source src="https://filesamples.com/samples/video/mp4/sample_640x360.mp4" type="video/mp4" />
+          </video>
+          <span class="video-dot__ring" aria-hidden="true"></span>
+          <span class="video-dot__icon" aria-hidden="true">▶</span>
+        </button>
       </a>
 
-      <!-- Item 3 -->
-      <a
-        href="https://picsum.photos/id/1039/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Rainy city street reflections">
-        <img
-          src="https://picsum.photos/id/1039/400/267"
-          width="400" height="267"
-          alt="Rainy city street reflections"
+      <a href="https://picsum.photos/id/1039/1600/1067" data-pswp-width="1600" data-pswp-height="1067"
+        data-caption="Rainy city street reflections"
+        data-video="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm">
+        <img src="https://picsum.photos/id/1039/400/267" width="400" height="267" alt="Rainy city street reflections"
           loading="lazy" decoding="async" />
+        <button class="video-dot" type="button" aria-label="Play video">
+          <video class="video-dot__vid" muted loop playsinline preload="metadata">
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm" />
+          </video>
+          <span class="video-dot__ring" aria-hidden="true"></span>
+          <span class="video-dot__icon" aria-hidden="true">▶</span>
+        </button>
       </a>
 
-      <!-- Item 4 -->
-      <a
-        href="https://picsum.photos/id/1040/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Desert dunes at sunset">
-        <img
-          src="https://picsum.photos/id/1040/400/267"
-          width="400" height="267"
-          alt="Desert dunes at sunset"
-          loading="lazy" decoding="async" />
-      </a>
-
-      <!-- Item 5 -->
-      <a
-        href="https://picsum.photos/id/1059/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Forest canopy light rays">
-        <img
-          src="https://picsum.photos/id/1059/400/267"
-          width="400" height="267"
-          alt="Forest canopy light rays"
-          loading="lazy" decoding="async" />
-      </a>
-
-      <!-- Item 6 -->
-      <a
-        href="https://picsum.photos/id/1069/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Coastal cliffs and surf">
-        <img
-          src="https://picsum.photos/id/1069/400/267"
-          width="400" height="267"
-          alt="Coastal cliffs and surf"
-          loading="lazy" decoding="async" />
-      </a>
+      <!-- Add more items as needed; keep the same button snippet inside each <a> -->
     </div>
   </section>
 
-  <!-- PhotoSwipe (UMD) – correct paths include /umd/ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe.umd.min.js"
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe-lightbox.umd.min.js"
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Modal for full video -->
+  <div class="video-modal" id="video-modal" hidden>
+    <div class="video-modal__backdrop" data-close-modal></div>
+    <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+      <button class="video-modal__close" type="button" aria-label="Close video" data-close-modal>✕</button>
+      <h3 id="video-modal-title" class="video-modal__title">Video</h3>
+      <div class="video-modal__body">
+        <video id="video-modal-player" controls playsinline></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- PhotoSwipe (UMD) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe.umd.min.js"
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe-lightbox.umd.min.js"
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <!-- Your script -->
   <script src="main.js" defer></script>
 </body>
+
 </html>
