@@ -67,7 +67,7 @@ body {
   font-size: 13px;
 }
 
-/* Visually hidden utility for the button label */
+/* Visually hidden utility */
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -79,7 +79,7 @@ body {
   .caption { font-size: 12px; }
 }
 
-/* <dialog> modal styling */
+/* Dialog modal */
 dialog {
   border: none;
   padding: 0;
@@ -89,7 +89,6 @@ dialog::backdrop {
   background: rgba(0,0,0,.6);
   backdrop-filter: blur(2px);
 }
-
 #videoDialog {
   width: min(92vw, 960px);
   margin: auto;
@@ -103,19 +102,3 @@ dialog::backdrop {
   height: auto;
   background: #000;
 }
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(0,0,0,.55);
-  color: #fff;
-  font-size: 20px;
-  line-height: 36px;
-  cursor: pointer;
-  z-index: 1;
-}
-.close-btn:hover { background: rgba(0,0,0,.7); }
