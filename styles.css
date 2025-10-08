@@ -127,3 +127,65 @@ body {
 /* Tiny open/close animation */
 .basicLightbox--visible .blb-dialog { animation: lb-in .18s ease-out; }
 @keyframes lb-in { from { transform: translateY(6px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Put near your other modal header button styles */
+.blb-fs {
+  width: 32px; height: 32px;
+  margin-right: 6px;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: #fff; font-size: 16px; line-height: 32px;
+  cursor: pointer;
+}
+.blb-fs:hover { background: rgba(255,255,255,.25); }
+
+/* ===== Mobile fullscreen overlay (non-PhotoSwipe) ===== */
+.fs-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.fs-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: calc(8px + env(safe-area-inset-top, 0)) 10px 8px 10px;
+  background: rgba(0,0,0,.75);
+  color: #fff;
+}
+
+.fs-close,
+.fs-fs {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 18px;
+  line-height: 36px;
+  cursor: pointer;
+}
+.fs-close:hover,
+.fs-fs:hover { background: rgba(255,255,255,.25); }
+
+.fs-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.fs-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* keep aspect ratio nicely in any orientation */
+  background: #000;
+}
