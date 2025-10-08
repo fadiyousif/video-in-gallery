@@ -8,7 +8,7 @@
   ];
   const POSTER = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop';
 
-  // Simple mobile detector: touch-first or narrow viewport
+  // Touch-first OR narrow viewport counts as mobile here
   const isMobile = () =>
     window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(max-width: 900px)').matches;
 
@@ -16,7 +16,7 @@
     const v = document.createElement('video');
     v.className = className || '';
     v.controls = true;
-    v.playsInline = true; // allow inline on iOS; we’ll request fullscreen programmatically
+    v.playsInline = true; // iOS inline; we'll request fullscreen programmatically
     v.preload = 'metadata';
     v.poster = POSTER;
     VIDEO_SOURCES.forEach(({ src, type }) => {
@@ -28,9 +28,9 @@
     return v;
   }
 
-  /* ------------------------ MOBILE: no lightbox ------------------------ */
+  /* ======================== MOBILE: no lightbox ======================== */
   function openMobileFullscreen() {
-    // Build overlay wrapper (will go fullscreen)
+    // Build overlay wrapper
     const overlay = document.createElement('div');
     overlay.className = 'fs-overlay';
     overlay.setAttribute('role', 'dialog');
@@ -40,21 +40,13 @@
     const header = document.createElement('div');
     header.className = 'fs-header';
 
-    // Optional manual fullscreen button (shown if auto-FS fails)
-    const fsBtn = document.createElement('button');
-    fsBtn.className = 'fs-fs';
-    fsBtn.type = 'button';
-    fsBtn.setAttribute('aria-label', 'Enter fullscreen');
-    fsBtn.textContent = '⤢';
-    fsBtn.style.display = 'none';
-
     const closeBtn = document.createElement('button');
     closeBtn.className = 'fs-close';
     closeBtn.type = 'button';
     closeBtn.setAttribute('aria-label', 'Close video');
     closeBtn.textContent = '×';
 
-    header.append(fsBtn, closeBtn);
+    header.append(closeBtn);
 
     const body = document.createElement('div');
     body.className = 'fs-body';
@@ -68,9 +60,9 @@
     const tryEnterFullscreen = (el) => {
       try {
         if (el.requestFullscreen) { el.requestFullscreen(); return true; }
-        if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); return true; }     // old Safari
-        return false;
-      } catch (_) { return false; }
+        if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); return true; } // old Safari
+      } catch (_) {}
+      return false;
     };
     const tryExitFullscreen = () => {
       try {
@@ -86,61 +78,66 @@
       openBtn.focus();
     };
 
-    // Wire close
+    // Close actions
     closeBtn.addEventListener('click', cleanup);
+    overlay.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); cleanup(); } });
 
-    // If user taps outside (header area), we still keep video; closing is via ×
-    overlay.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        cleanup();
-      }
-    });
+    // Autoplay attempt
+    video.play().catch(() => {});
 
-    // Try autoplay + fullscreen
-    video.play().catch(() => { /* ignore autoplay errors; controls are visible */ });
-
-    // Prefer making the OVERLAY fullscreen so the close button stays visible
+    // Prefer fullscreening the OVERLAY so the close stays visible
     let wentFS = tryEnterFullscreen(overlay);
 
-    // iOS legacy fallback: if element fullscreen fails, try native video fullscreen
+    // iOS legacy fallback: video-only native fullscreen
     if (!wentFS && typeof video.webkitEnterFullscreen === 'function') {
       try {
         video.webkitEnterFullscreen();
         wentFS = true;
-        // When iOS native fullscreen ends, remove overlay
         video.addEventListener('webkitendfullscreen', cleanup, { once: true });
-      } catch (_) { /* ignored */ }
+      } catch (_) {}
     }
 
-    // If FS was blocked, reveal manual fullscreen button
+    // No extra UI: support double-tap to enter fullscreen if auto-FS was blocked
     if (!wentFS) {
-      fsBtn.style.display = 'inline-flex';
-      fsBtn.addEventListener('click', () => {
-        if (tryEnterFullscreen(overlay)) fsBtn.style.display = 'none';
+      let lastTap = 0;
+      const threshold = 300; // ms
+      video.addEventListener('pointerup', (e) => {
+        if (e.pointerType !== 'touch') return;
+        const now = Date.now();
+        if (now - lastTap < threshold) {
+          // double-tap
+          if (!tryEnterFullscreen(overlay) && typeof video.webkitEnterFullscreen === 'function') {
+            try { video.webkitEnterFullscreen(); } catch (_) {}
+          }
+        }
+        lastTap = now;
+      });
+
+      // Also support dblclick (just in case)
+      video.addEventListener('dblclick', () => {
+        if (!tryEnterFullscreen(overlay) && typeof video.webkitEnterFullscreen === 'function') {
+          try { video.webkitEnterFullscreen(); } catch (_) {}
+        }
       });
     }
 
-    // If user exits fullscreen via system UI, keep overlay visible (non-FS),
-    // but you can auto-close instead by calling cleanup() here.
+    // If user exits system fullscreen, keep overlay (non-FS) until they tap ×
     const onFSChange = () => {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        // still keep overlay; do nothing
-      }
+      // no-op; remove this listener if you want different behavior
+      document.removeEventListener('fullscreenchange', onFSChange);
+      document.removeEventListener('webkitfullscreenchange', onFSChange);
     };
-    document.addEventListener('fullscreenchange', onFSChange, { once: true });
-    document.addEventListener('webkitfullscreenchange', onFSChange, { once: true });
+    document.addEventListener('fullscreenchange', onFSChange);
+    document.addEventListener('webkitfullscreenchange', onFSChange);
   }
 
-  /* ------------------------ DESKTOP: basicLightbox --------------------- */
+  /* ======================== DESKTOP: basicLightbox ===================== */
   function openDesktopLightbox() {
-    // Ensure basicLightbox is available (loaded via your HTML)
     if (typeof window.basicLightbox === 'undefined') {
       console.error('basicLightbox not found. Include its script on desktop.');
       return;
     }
 
-    // Build content string (header outside the video)
     const sources = VIDEO_SOURCES.map(s => `<source src="${s.src}" type="${s.type}">`).join('');
     const html = `
       <div class="blb-dialog" role="dialog" aria-modal="true" aria-label="Video player">
@@ -185,9 +182,8 @@
     instance.show();
   }
 
-  /* ------------------------ Entry point ------------------------------- */
-  const open = (e) => {
-    // Ensure this runs in direct click/keypress (user gesture)
+  /* ======================== Entry point ================================ */
+  const open = () => {
     if (isMobile()) openMobileFullscreen();
     else openDesktopLightbox();
   };
@@ -196,7 +192,7 @@
   openBtn.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      open(e);
+      open();
     }
   });
 })();
