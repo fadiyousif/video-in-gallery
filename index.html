@@ -2,105 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <title>Gallery with PhotoSwipe Video (UMD)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PhotoSwipe Gallery (Inline Video on First Image)</title>
 
-  <!-- PhotoSwipe core styles -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/photoswipe.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Your gallery styles -->
-  <link rel="stylesheet" href="styles.css" />
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <main class="gallery" aria-label="Image gallery">
+    <!-- Card 1: circular video trigger -->
+    <figure class="card card--with-video">
+      <img
+        src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop"
+        alt="Scenic coastline at golden hour"
+        loading="lazy"
+      />
+      <figcaption class="caption">Click the circle to watch</figcaption>
+      <button class="video-circle" type="button" aria-label="Open video in lightbox"></button>
+    </figure>
 
-  <section class="section">
-    <h2>Image Gallery</h2>
-    <p class="hint">Click an image to open PhotoSwipe. The first image has a round video overlay—click it to play inline.</p>
-
-    <!-- Gallery root -->
-    <div class="gallery-grid" id="my-gallery">
-      <!-- Item 1 (with video circle) -->
+    <!-- Card 2 -->
+    <figure class="card">
       <a
-        href="https://picsum.photos/id/1015/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Mountain river at golden hour"
-        data-video="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4">
+        href="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=2400&auto=format&fit=crop"
+        data-pswp-width="2400"
+        data-pswp-height="1600"
+      >
         <img
-          src="https://picsum.photos/id/1015/400/267"
-          width="400" height="267"
-          alt="Mountain river at golden hour"
-          loading="lazy" decoding="async" />
-        <!-- Video circle overlay (only on first image) -->
-        <button class="video-dot" type="button" aria-label="Play video">
-          <video class="video-dot__vid" muted loop playsinline preload="metadata">
-            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
-          </video>
-          <span class="video-dot__ring" aria-hidden="true"></span>
-          <span class="video-dot__icon" aria-hidden="true">▶</span>
-        </button>
+          src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1600&auto=format&fit=crop"
+          alt="Mountain range under dramatic sky"
+          loading="lazy"
+        />
       </a>
+    </figure>
 
-      <!-- Item 2 -->
+    <!-- Card 3 -->
+    <figure class="card">
       <a
-        href="https://picsum.photos/id/1025/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Majestic eagle portrait">
-        <img src="https://picsum.photos/id/1025/400/267" width="400" height="267" alt="Majestic eagle portrait"
-             loading="lazy" decoding="async" />
+        href="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2400&auto=format&fit=crop"
+        data-pswp-width="2400"
+        data-pswp-height="1600"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop"
+          alt="Forest path with soft sunlight"
+          loading="lazy"
+        />
       </a>
+    </figure>
+  </main>
 
-      <!-- Item 3 -->
-      <a
-        href="https://picsum.photos/id/1039/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Rainy city street reflections">
-        <img src="https://picsum.photos/id/1039/400/267" width="400" height="267" alt="Rainy city street reflections"
-             loading="lazy" decoding="async" />
-      </a>
+  <!-- ✅ Correct UMD builds (order matters) -->
+  <script src="https://unpkg.com/photoswipe@5.4.4/dist/umd/photoswipe.umd.min.js"></script>
+  <script src="https://unpkg.com/photoswipe@5.4.4/dist/umd/photoswipe-lightbox.umd.min.js"></script>
 
-      <!-- Item 4 -->
-      <a
-        href="https://picsum.photos/id/1040/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Desert dunes at sunset">
-        <img src="https://picsum.photos/id/1040/400/267" width="400" height="267" alt="Desert dunes at sunset"
-             loading="lazy" decoding="async" />
-      </a>
-
-      <!-- Item 5 -->
-      <a
-        href="https://picsum.photos/id/1059/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Forest canopy light rays">
-        <img src="https://picsum.photos/id/1059/400/267" width="400" height="267" alt="Forest canopy light rays"
-             loading="lazy" decoding="async" />
-      </a>
-
-      <!-- Item 6 -->
-      <a
-        href="https://picsum.photos/id/1069/1600/1067"
-        data-pswp-width="1600"
-        data-pswp-height="1067"
-        data-caption="Coastal cliffs and surf">
-        <img src="https://picsum.photos/id/1069/400/267" width="400" height="267" alt="Coastal cliffs and surf"
-             loading="lazy" decoding="async" />
-      </a>
-    </div>
-  </section>
-
-  <!-- PhotoSwipe (UMD) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe.umd.min.js"
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.4/umd/photoswipe-lightbox.umd.min.js"
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  <!-- Your script -->
-  <script src="main.js" defer></script>
+  <!-- Your script (runs after the two above) -->
+  <script src="main.js"></script>
 </body>
 </html>

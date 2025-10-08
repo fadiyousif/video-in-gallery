@@ -1,148 +1,57 @@
 :root {
-  --g-gap: 12px;
-  --g-columns: 3;
-  --accent: #6aa6ff;
-  --ring: rgba(255,255,255,.8);
+  --gap: 18px;
+  --radius: 16px;
+  --shadow: 0 10px 25px rgba(0,0,0,.15);
+  --circle-size: clamp(90px, 22vw, 150px);
 }
 
-@media (max-width: 900px) { :root { --g-columns: 2; } }
-@media (max-width: 560px) { :root { --g-columns: 1; } }
-
+* { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-  background: #0f1115;
-  color: #e7e9ee;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: #0b0c10;
+  color: #f6f7f9;
+  padding: 28px;
 }
 
-.section {
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
   max-width: 1200px;
-  margin: 48px auto;
-  padding: 0 16px;
-}
-.section h2 {
-  font-weight: 700;
-  letter-spacing: .2px;
-  margin: 0 0 12px;
-}
-.section p.hint {
-  opacity: .75;
-  margin: 0 0 24px;
+  margin: 0 auto;
 }
 
-/* Thumbnail grid */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--g-columns), 1fr);
-  gap: var(--g-gap);
+.card { position: relative; border-radius: var(--radius); overflow: clip; box-shadow: var(--shadow); background: #121318; }
+.card img { display: block; width: 100%; height: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.card a { display: block; }
+
+.card--with-video .video-circle {
+  position: absolute; top: 12px; right: 12px; width: var(--circle-size); aspect-ratio: 1 / 1;
+  border-radius: 50%; overflow: hidden; border: 3px solid rgba(255,255,255,.8);
+  background:
+    radial-gradient(rgba(0,0,0,.45), rgba(0,0,0,.65)),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop") center/cover no-repeat;
+  box-shadow: 0 12px 35px rgba(0,0,0,.35); cursor: pointer; transition: transform .2s ease, border-color .2s ease;
 }
-.gallery-grid a {
-  position: relative; /* needed for overlay positioning */
+.video-circle:hover { transform: scale(1.03); border-color: #fff; }
+.video-circle:active { transform: scale(.995); }
+
+.caption {
+  position: absolute; left: 14px; bottom: 12px; padding: 6px 10px; border-radius: 999px;
+  background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.15); font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .gallery { grid-template-columns: 1fr; }
+  .card img { aspect-ratio: 16 / 10; }
+  .caption { font-size: 12px; }
+}
+
+.pswp__custom-video {
+  max-width: min(90vw, 960px);
+  max-height: 80vh;
+  width: 100%;
+  height: auto;
   display: block;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #1a1f2b;
-  box-shadow: 0 6px 20px rgba(0,0,0,.35);
-  outline: none;
-}
-.gallery-grid img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  aspect-ratio: 4 / 3;
-  display: block;
-  transition: transform .35s ease;
-}
-.gallery-grid a:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
-.gallery-grid a:hover img { transform: scale(1.04); }
-
-/* Custom caption inside the PhotoSwipe lightbox (optional) */
-.pswp__custom-caption {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
-  padding: 18px 16px 12px; font-size: 14px; line-height: 1.35;
-  text-shadow: 0 1px 2px rgba(0,0,0,.35);
-}
-
-/* --- Video circle overlay --- */
-.video-dot {
-  position: absolute;
-  top: 10px; right: 10px;
-  width: 64px; height: 64px;
-  border: 0; border-radius: 50%;
-  padding: 0; cursor: pointer;
-  background: transparent;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-}
-.video-dot:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.video-dot__vid {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  filter: saturate(1.1) contrast(1.05);
-  box-shadow: 0 6px 18px rgba(0,0,0,.4);
-  pointer-events: none;
-}
-.video-dot__ring {
-  position: absolute; inset: 0;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px var(--ring) inset, 0 0 0 1px rgba(0,0,0,.25);
-  pointer-events: none;
-}
-.video-dot__icon {
-  position: absolute;
-  font-size: 18px; line-height: 1;
-  transform: translateX(1px);
-  text-shadow: 0 1px 2px rgba(0,0,0,.6);
-  pointer-events: none;
-}
-
-/* --- Inline video overlay over the thumbnail --- */
-.inline-video {
-  position: absolute;
-  inset: 0;
-  z-index: 4;              /* above the dot and image */
-  display: grid;
-  place-items: center;
-  background: #000;        /* so letterboxed area looks clean */
-  border-radius: 10px;
-}
-.inline-video video {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  background: #000;
-  object-fit: contain;     /* keep aspect ratio inside the thumb area */
-}
-.inline-video__close {
-  position: absolute;
-  top: 8px; right: 8px;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  border: 0;
-  background: rgba(255,255,255,.1);
-  color: #fff;
-  cursor: pointer;
-}
-.inline-video__close:hover { background: rgba(255,255,255,.18); }
-
-/* When playing, hide the round dot so it doesn’t overlap */
-a.is-playing .video-dot { opacity: 0; pointer-events: none; }
-
-/* Video inside PhotoSwipe */
-.pswp__video-container {
-  width: 100%;
-  height: 100%;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.pswp__video-container video {
-  max-width: 100%;
-  max-height: 100%;
-  background: #000;
-  object-fit: contain;
 }
