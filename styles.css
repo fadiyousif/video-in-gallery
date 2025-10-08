@@ -3,7 +3,6 @@
   --g-columns: 3;
   --accent: #6aa6ff;
   --ring: rgba(255,255,255,.8);
-  --modal-bg: rgba(0,0,0,.6);
 }
 
 @media (max-width: 900px) { :root { --g-columns: 2; } }
@@ -57,7 +56,7 @@ body {
 .gallery-grid a:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
 .gallery-grid a:hover img { transform: scale(1.04); }
 
-/* Custom caption inside the PhotoSwipe lightbox */
+/* Custom caption inside the PhotoSwipe lightbox (optional) */
 .pswp__custom-caption {
   position: absolute; left: 0; right: 0; bottom: 0;
   background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
@@ -73,7 +72,7 @@ body {
   border: 0; border-radius: 50%;
   padding: 0; cursor: pointer;
   background: transparent;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   place-items: center;
 }
@@ -84,7 +83,7 @@ body {
   object-fit: cover;
   filter: saturate(1.1) contrast(1.05);
   box-shadow: 0 6px 18px rgba(0,0,0,.4);
-  pointer-events: none; /* avoid taking focus/clicks from the button */
+  pointer-events: none;
 }
 .video-dot__ring {
   position: absolute; inset: 0;
@@ -100,42 +99,50 @@ body {
   pointer-events: none;
 }
 
-/* --- Video Modal --- */
-.video-modal[hidden] { display: none; }
-.video-modal {
-  position: fixed; inset: 0; z-index: 1000;
+/* --- Inline video overlay over the thumbnail --- */
+.inline-video {
+  position: absolute;
+  inset: 0;
+  z-index: 4;              /* above the dot and image */
+  display: grid;
+  place-items: center;
+  background: #000;        /* so letterboxed area looks clean */
+  border-radius: 10px;
 }
-.video-modal__backdrop {
-  position: absolute; inset: 0; background: var(--modal-bg); backdrop-filter: blur(1px);
-}
-.video-modal__dialog {
-  position: relative;
-  width: min(920px, 92vw);
-  margin: 6vh auto 0;
-  background: #0b0d12;
-  border-radius: 12px;
-  box-shadow: 0 30px 80px rgba(0,0,0,.6);
-  padding: 16px 16px 12px;
-}
-.video-modal__title {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 600;
-  opacity: .85;
-}
-.video-modal__body { width: 100%; }
-#video-modal-player {
+.inline-video video {
   width: 100%;
-  max-height: 72vh;
-  display: block;
+  height: 100%;
+  border-radius: 10px;
   background: #000;
-  border-radius: 8px;
+  object-fit: contain;     /* keep aspect ratio inside the thumb area */
 }
-.video-modal__close {
-  position: absolute; top: 10px; right: 10px;
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 0; background: rgba(255,255,255,.08); color: #fff;
+.inline-video__close {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255,255,255,.1);
+  color: #fff;
   cursor: pointer;
-  z-index: 10;
 }
-.video-modal__close:hover { background: rgba(255,255,255,.15); }
+.inline-video__close:hover { background: rgba(255,255,255,.18); }
+
+/* When playing, hide the round dot so it doesn’t overlap */
+a.is-playing .video-dot { opacity: 0; pointer-events: none; }
+
+/* Video inside PhotoSwipe */
+.pswp__video-container {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pswp__video-container video {
+  max-width: 100%;
+  max-height: 100%;
+  background: #000;
+  object-fit: contain;
+}

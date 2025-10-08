@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     preloadFirstSlide: true
   });
 
-  // Custom caption in PhotoSwipe
+  // Optional caption in PhotoSwipe
   lightbox.on('uiRegister', function () {
     lightbox.pswp.ui.registerElement({
       name: 'caption',
@@ -37,9 +37,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Auto-play/pause when we inject a video slide
+  lightbox.on('contentAppend', ({ content }) => {
+    const v = content?.element?.querySelector?.('video');
+    if (v) v.play().catch(() => {});   // user just clicked; should be allowed
+  });
+  lightbox.on('contentRemove', ({ content }) => {
+    const v = content?.element?.querySelector?.('video');
+    if (v) v.pause();
+  });
+  lightbox.on('close', () => {
+    document.querySelectorAll('.pswp__video-container video').forEach(v => { v.pause(); });
+  });
+
   lightbox.init();
 
-  // Defensive: stop default <a> navigation for gallery items in case PS init is delayed
+  // Defensive: stop default <a> navigation in case PS init is delayed
   const galleryEl = document.querySelector(gallerySelector);
   if (galleryEl) {
     galleryEl.addEventListener('click', function (e) {
@@ -49,80 +62,37 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ----- Video Dot: modal player -----
-  // One modal for all items
-  const modal = document.getElementById('video-modal');
-  const modalVideo = document.getElementById('video-modal-player');
-  const closeEls = modal.querySelectorAll('[data-close-modal]');
-  const defaultVideo = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+  // ----- First image: open a VIDEO SLIDE inside PhotoSwipe -----
+  const firstDot = document.querySelector(`${gallerySelector} .video-dot`);
+  if (firstDot) {
+    const defaultVideo = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
 
-  function openVideo(src, titleText) {
-    // reset & set source
-    modalVideo.pause();
-    modalVideo.innerHTML = ''; // clear previous sources
-    const source = document.createElement('source');
-    source.src = src || defaultVideo;
-    source.type = src && src.endsWith('.webm') ? 'video/webm' : 'video/mp4';
-    modalVideo.appendChild(source);
+    firstDot.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
 
-    // set title
-    const titleEl = document.getElementById('video-modal-title');
-    titleEl.textContent = titleText || 'Video';
+      const parentA = firstDot.closest('a');
+      const videoSrc = (parentA && parentA.getAttribute('data-video')) || defaultVideo;
+      const isWebm = /\.webm(\?|$)/i.test(videoSrc);
 
-    modal.hidden = false;
-    // small async to allow layout before play
-    setTimeout(() => {
-      modalVideo.load();
-      modalVideo.play().catch(() => {/* autoplay might be blocked until user interaction; controls are visible */});
-    }, 20);
+      // Build one-off HTML slide that contains a video element
+      const html = `
+        <div class="pswp__video-container">
+          <video controls playsinline autoplay>
+            <source src="${videoSrc}" type="${isWebm ? 'video/webm' : 'video/mp4'}" />
+          </video>
+        </div>
+      `;
 
-    // prevent background scroll
-    document.documentElement.style.overflow = 'hidden';
-  }
-
-  function closeVideo() {
-    modalVideo.pause();
-    modal.hidden = true;
-    document.documentElement.removeAttribute('style');
-    // return focus to last trigger if available
-    if (closeVideo.lastTrigger && closeVideo.lastTrigger.focus) {
-      closeVideo.lastTrigger.focus();
-    }
-  }
-
-  closeEls.forEach(btn => btn.addEventListener('click', closeVideo));
-  modal.addEventListener('click', function (e) {
-    if (e.target && e.target.hasAttribute('data-close-modal')) closeVideo();
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !modal.hidden) closeVideo();
-  });
-
-  // Wire every .video-dot inside gallery
-  if (galleryEl) {
-    galleryEl.querySelectorAll('.video-dot').forEach(dot => {
-      // Prevent PhotoSwipe from opening when clicking the dot
-      dot.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const parentA = dot.closest('a');
-        const videoSrc = (parentA && parentA.getAttribute('data-video')) || defaultVideo;
-        const title = (parentA && parentA.getAttribute('data-caption')) ||
-                      (parentA && parentA.querySelector('img')?.alt) || 'Video';
-
-        closeVideo.lastTrigger = dot; // for focus restore
-        openVideo(videoSrc, title);
-      });
-
-      // Start the tiny preview video when visible
-      const tinyVid = dot.querySelector('.video-dot__vid');
-      if (tinyVid) {
-        tinyVid.addEventListener('canplay', () => {
-          // try to play silently (should be allowed because muted + user gesture soon)
-          tinyVid.play().catch(() => {});
-        }, { once: true });
-      }
+      // Open PhotoSwipe at slide 0 with our HTML slide; animate from click point
+      const point = { x: e.clientX, y: e.clientY };
+      lightbox.loadAndOpen(0, [{ html }], point);
     });
+
+    // Keep the tiny preview video in the circle looping
+    const tinyVid = firstDot.querySelector('.video-dot__vid');
+    if (tinyVid) {
+      tinyVid.addEventListener('canplay', () => { tinyVid.play().catch(() => {}); }, { once: true });
+    }
   }
 });
